@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const query = require('../db/db');
+const {query} = require('../db/db');
 
 router.get('/', (req, res) => {
     console.log('try')

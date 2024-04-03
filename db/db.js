@@ -10,4 +10,13 @@ const pool = new Pool({
 const query = (text, params, callback) => {
     return pool.query(text, params, callback)
   }
-module.exports = query
+
+const emailExists = async (email) => {
+    const data = await pool.query('SELECT * FROM users WHERE email = $1',[email])
+    if (data.rowCount === 0){
+        return false
+    }else{
+        return data.rows[0];
+    }
+}
+module.exports = {query, emailExists}

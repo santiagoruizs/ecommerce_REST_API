@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const query = require('../db/db');
+const {query} = require('../db/db');
 
 const checkProductID = (req, res, next) => {
 
