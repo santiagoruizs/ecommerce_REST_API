@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const {query} = require('../db/db');
 
+//id middleware
 const checkUserID = (req, res, next) => {
 
     query('SELECT * FROM users WHERE id ='+req.params.id,(error, results) => {
@@ -48,19 +49,20 @@ router.put('/:id',checkUserID, (req, res) => {
     
 })
 
-//Create User
-router.post('/', (req, res) => {
-    console.log(req.body)
-    let {name, email, password} = req.body 
-    query(`INSERT INTO users (name, email, password) VALUES('${name}', '${email}', '${password}');`,(error, results) => {
-        if(error){
-            throw error
-        }
-        res.status(201).json({name, email, password})
-    })
+// //Create User
+// router.post('/', (req, res) => {
+//     console.log(req.body)
+//     let {name, email, password} = req.body 
+//     query(`INSERT INTO users (name, email, password) VALUES('${name}', '${email}', '${password}');`,(error, results) => {
+//         if(error){
+//             throw error
+//         }
+//         res.status(201).json({name, email, password})
+//     })
     
-})
+// })
 //Delete User By ID
+
 router.delete('/:id',checkUserID, (req, res) => {
     let id = req.params.id
     query('DELETE FROM users WHERE id ='+id+';',(error, results) => {

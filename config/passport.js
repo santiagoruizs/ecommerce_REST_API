@@ -2,8 +2,37 @@ const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 const bcrypt = require("bcrypt");
 const {query, emailExists} = require('../db/db')
+// Set up the Passport Signup strategy:
+passport.use("local-signup",
+  new LocalStrategy({
+        usernameField: "email",
+        passwordField: "password",
+        passReqToCallback: true
+        }, 
+        async (req, email, password, done) => {
+            const { name } = req.body
+            try{
+                const existingUser = await emailExists(email);
+                if (existingUser) return done(null, false)
+                
+                const salt = await bcrypt.genSalt(10)
+                const hashedPassword = await bcrypt.hash(password, salt)
+                const newUser = { name, email, password: hashedPassword };
 
-// Set up the Passport strategy:
+                query(`INSERT INTO users (name , email, password) VALUES ('${name}', '${email}','${hashedPassword}')`,(error, results) => {
+                    if(error){
+                        return done(error)
+                    }
+                    return done(null, newUser)
+                })          
+            }catch(error){
+                return done(error)
+            }
+                    
+    })
+)
+
+// Set up the Passport Login strategy:
 passport.use("local-login",
   new LocalStrategy({
         usernameField: "email",

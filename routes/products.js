@@ -27,7 +27,17 @@ router.get('/', (req, res) => {
 
 //Get products By ID
 router.get('/:id',checkProductID, (req, res) => {
-    query('SELECT * FROM products WHERE id ='+req.params.id,(error, results) => {
+    query('SELECT * FROM products WHERE id = $1;',[req.params.id],(error, results) => {
+        if(error){
+            throw error
+        }
+        res.status(200).json(results.rows)
+    })
+})
+
+//Get products By Category
+router.get('/',checkProductID, (req, res) => {
+    query('SELECT * FROM products WHERE category =$1;',[req.query.params.category],(error, results) => {
         if(error){
             throw error
         }
@@ -37,8 +47,8 @@ router.get('/:id',checkProductID, (req, res) => {
 //Update products
 router.put('/:id', checkProductID,(req, res) => {
     let id = req.params.id
-    let {name, quantity, price, imageUrl} = req.body 
-    query(`UPDATE products set name = '${name}', quantity=${quantity}, price=${price}, imageUrl = '${imageUrl}' WHERE id =+${id};`,(error, results) => {
+    let {name, quantity, price, category, imageUrl} = req.body 
+    query('UPDATE products set name = $1, quantity=$2, price=$3, category = $4, imageUrl = $5 WHERE id = $6;', [name, quantity, price, category, imageUrl, id],(error, results) => {
         if(error){
             throw error
         }
@@ -49,12 +59,12 @@ router.put('/:id', checkProductID,(req, res) => {
 
 //Create products
 router.post('/', (req, res) => {
-    let {name, quantity, price, imageUrl} = req.body 
-    query(`INSERT INTO products (name, quantity, price, imageUrl) VALUES('${name}', ${quantity}, ${price}, '${imageUrl}');`,(error, results) => {
+    let {name, quantity, price, imageUrl, category} = req.body 
+    query('INSERT INTO products (name, quantity, price, category, imageUrl) VALUES ($1, $2, $3, $4, $5)', [name, quantity, price, category, imageUrl],(error, results) => {
         if(error){
             throw error
         }
-        res.status(201).json({name, quantity, price, imageUrl})
+        res.status(201).json({name, quantity, price, imageUrl, category})
     })
     
 })
