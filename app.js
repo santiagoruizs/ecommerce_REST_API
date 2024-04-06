@@ -1,21 +1,50 @@
-const express = require('express')
+const express = require('express');
+var path = require('path');
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const passport = require("passport");
 const session = require("express-session");
-
+const swaggerJSDoc = require('swagger-jsdoc');
 require('dotenv').config()
+require("./config/passport");
+//Routes
 const users = require('./routes/users')
 const products = require('./routes/products')
 const carts = require('./routes/carts')
 const orders = require('./routes/orders')
 const auth = require('./routes/auth')
 
-require("./config/passport");
 
+const PORT = process.env.PORT
 
 const app = express()
-const PORT = process.env.PORT
+// swagger definition
+var swaggerDefinition = {
+    info: {
+      title: 'Node Swagger API',
+      version: '1.0.0',
+      description: 'Demonstrating how to describe a RESTful API with Swagger',
+    },
+    host: 'localhost:3000',
+    basePath: '/',
+  };
+  
+// options for the swagger docs
+var options = {
+// import swaggerDefinitions
+swaggerDefinition: swaggerDefinition,
+// path to the API docs
+apis: ['./routes/*.js'],
+};
+
+// initialize swagger-jsdoc
+var swaggerSpec = swaggerJSDoc(options);
+
+app.get('/swagger.json', function(req, res) {
+res.setHeader('Content-Type', 'application/json');
+res.send(swaggerSpec);
+});
+
 
 app.use(session({
     secret : 'Xbcky39003bNusj',
@@ -40,7 +69,7 @@ app.use('/users', users)
 app.use('/products', products)
 app.use('/carts', carts)
 app.use('/orders', orders)
-
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.listen(PORT||8000, ()=>{
     console.log(`App running on port ${PORT||8000}.`)
