@@ -18,6 +18,18 @@ const checkUserID = (req, res, next) => {
 }
 /**
  * @swagger
+ * definitions:
+ *   Users:
+ *     properties:
+ *       name:
+ *         type: string
+ *       email:
+ *         type: string
+ *       password:
+ *         type: string
+ */
+/**
+ * @swagger
  * /users:
  *   get:
  *     tags:
@@ -58,7 +70,7 @@ router.get('/', (req, res) => {
  *       200:
  *         description: A single user
  *         schema:
- *           $ref: '#/definitions/Order'
+ *           $ref: '#/definitions/Users'
  */
 //Get User By ID
 router.get('/:id',checkUserID, (req, res) => {

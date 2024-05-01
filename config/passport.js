@@ -13,7 +13,7 @@ passport.use("local-signup",
             const { name } = req.body
             try{
                 const existingUser = await emailExists(email);
-                if (existingUser) return done(null, false)
+                if (existingUser) return done(null, false, { message: 'Incorrect email or password' })
                 
                 const salt = await bcrypt.genSalt(10)
                 const hashedPassword = await bcrypt.hash(password, salt)
@@ -41,9 +41,9 @@ passport.use("local-login",
         async (email, password, done) => {
             try{
                 const user = await emailExists(email);
-                if (!user) return done(null, false)
+                if (!user) return done(null, false, { message: 'Incorrect email or password' })
                 const matchedPassword = await bcrypt.compare(password, user.password)
-                if(!matchedPassword) return done(null, false)
+                if(!matchedPassword) return done(null, false, { message: 'Incorrect email or password' })
                 return done(null, user)
             }catch(error){
                 return done(error)

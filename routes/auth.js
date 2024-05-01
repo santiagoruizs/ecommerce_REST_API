@@ -18,17 +18,46 @@ const checkUserEmail = (req, res, next) => {
     })
 }
 
-router.post("/signup", 
-    passport.authenticate('local-signup', {session: false}),
-    (req, res) => {
-        res.status(201).json({ message: 'Signup successful', user: req.user });
-    }
-    );
-
-router.post("/login",
-  passport.authenticate("local-login", {session: false}),
-  (req, res , next) => {
-    res.json({message: 'Login successful', user : req.user})
+router.post("/signup", async (req, res) => {
+    passport.authenticate('local-signup', { session: false }, async (err, user, info) => {
+      try {
+        if (err) {
+          // Handle internal server error
+          throw err;
+        }
+        if (!user) {
+          // Handle user already exists error
+          return res.status(400).json({ error: 'User already exists' });
+        }
+        // User created successfully
+        res.status(201).json({ message: 'Signup successful', user: user });
+      } catch (error) {
+        // Handle any errors
+        console.error(error);
+        res.status(500).json({ error: 'Internal server error' });
+      }
+    })(req, res);
   });
+
+router.post("/login", async (req, res) => {
+    passport.authenticate('local-login', { session: false }, async (err, user, info) => {
+        try {
+        if (err) {
+            // Handle internal server error
+            throw err;
+        }
+        if (!user) {
+            // Handle login failed error
+            return res.status(401).json({ error: 'Incorrect email or password' });
+        }
+        // Login successful
+        res.status(200).json({ message: 'Login successful', user: user });
+        } catch (error) {
+        // Handle any errors
+        console.error(error);
+        res.status(500).json({ error: 'Internal server error' });
+        }
+    })(req, res);
+    });
 
 module.exports = router; 

@@ -40,6 +40,8 @@ apis: ['./routes/*.js'],
 // initialize swagger-jsdoc
 var swaggerSpec = swaggerJSDoc(options);
 
+
+
 app.get('/swagger.json', function(req, res) {
 res.setHeader('Content-Type', 'application/json');
 res.send(swaggerSpec);
@@ -54,6 +56,12 @@ app.use(session({
     sameSite: 'none',
     secure: true
   }));
+
+const errorHandler = (err, req, res, next) => {
+  console.error(err.stack);
+  console.log(err)
+  res.status(500).send('Something broke!');
+};
 
 app.use(cors())
 app.use(bodyParser.json())
@@ -70,6 +78,8 @@ app.use('/products', products)
 app.use('/carts', carts)
 app.use('/orders', orders)
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(errorHandler);
 
 app.listen(PORT||8000, ()=>{
     console.log(`App running on port ${PORT||8000}.`)
