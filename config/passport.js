@@ -2,6 +2,8 @@ const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 const bcrypt = require("bcrypt");
 const {query, emailExists} = require('../db/db')
+
+require('dotenv').config()
 // Set up the Passport Signup strategy:
 passport.use("local-signup",
   new LocalStrategy({

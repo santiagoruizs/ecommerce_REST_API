@@ -60,13 +60,39 @@ router.get('/', (req, res) => {
  *         schema:
  *           $ref: '#/definitions/Order'
  */
-router.get('/:id', checkOrderID,(req, res) => {
+router.get('/:id',(req, res) => {
     console.log('try')
-    query('SELECT * FROM orders WHERE id = $1',[req.params.id], (error, results) => {
+    query('select o.order_date,o.price as total_price, o.id, o.cart_id, cp.product_id, p.name, cp.quantity, p.price,p.imageurl  from orders as o '+
+    'inner join carts as c on o.cart_id = c.id '+
+    'inner join cart_products as cp on cp.cart_id = c.id '+
+    'inner join products as p on p.id = cp.product_id '+
+    'WHERE o.user_id =$1',[req.params.id], (error, results) => {
         if(error){
             throw error
         }
-        res.status(200).json(results.rows)
+        const orders = {};
+
+        results.rows.forEach(row => {
+            const { id, order_date, product_id, name, quantity, price, imageurl, total_price } = row;
+
+            if (!orders[id]) {
+            orders[id] = {
+                id,
+                date: order_date,
+                total_price,
+                products: []
+            };
+            }
+
+            orders[id].products.push({
+            product_id,
+            name,
+            quantity,
+            price,
+            imageurl
+            });
+        });
+        res.status(200).json(Object.values(orders))
     } )
 });
 

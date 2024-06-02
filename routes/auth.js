@@ -19,7 +19,7 @@ const checkUserEmail = (req, res, next) => {
 }
 
 router.post("/signup", async (req, res) => {
-    passport.authenticate('local-signup', { session: false }, async (err, user, info) => {
+    passport.authenticate('local-signup', async (err, user, info) => {
       try {
         if (err) {
           // Handle internal server error
@@ -40,7 +40,7 @@ router.post("/signup", async (req, res) => {
   });
 
 router.post("/login", async (req, res) => {
-    passport.authenticate('local-login', { session: false }, async (err, user, info) => {
+    passport.authenticate('local-login', async (err, user, info) => {
         try {
         if (err) {
             // Handle internal server error
@@ -59,5 +59,19 @@ router.post("/login", async (req, res) => {
         }
     })(req, res);
     });
+router.get("/logout", (req, res) => {
+    req.logout();
+    res.json({msg: "User Logged Out"});
+});
 
+router.get('/check-auth', (req, res) => {
+  if (req.isAuthenticated()) {
+      res.status(200).json({ authenticated: true, user: req.user });
+  } else {
+      res.status(401).json({ authenticated: false });
+  }
+});
+
+
+    
 module.exports = router; 

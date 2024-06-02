@@ -24,7 +24,15 @@ router.get('/', (req, res) => {
         res.status(200).json(results.rows)
     })
 });
-
+//GET Top Products
+router.get('/top', (req, res) => {
+    query('SELECT * FROM products ORDER BY id ASC LIMIT 3',(error, results) => {
+        if(error){
+            throw error
+        }
+        res.status(200).json(results.rows)
+    })
+});
 //Get products By ID
 router.get('/:id',checkProductID, (req, res) => {
     query('SELECT * FROM products WHERE id = $1;',[req.params.id],(error, results) => {

@@ -72,6 +72,7 @@ app.get('/', (req, res) => {
     res.status(200).json({status:'Ok'})
 })
 
+
 app.use('/auth', auth)
 app.use('/users', users)
 app.use('/products', products)
